@@ -1,0 +1,6 @@
+*.o
+*.dSYM/
+knn
+.DS_Store
+train_file
+test_file
