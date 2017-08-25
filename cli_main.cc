@@ -1,6 +1,7 @@
+#include <iostream>
 #include "utils.h"
 #include "point.h"
-#include <iostream>
+#include "covertree.h"
 
 int main(int argc, char *argv[]) {
 
@@ -16,6 +17,12 @@ int main(int argc, char *argv[]) {
   for (auto e: pv) {
     e.print();
   }
+
+  CoverTree covertree;
+  for  (auto e: pv) {
+    covertree.insertPoint(e);
+  }
+
 
   return 0;
 }
