@@ -2,9 +2,11 @@
 
 std::vector<double> Point::getVec() const {return vec;}
 
+std::string Point::getId() const {return id;}
+
 double Point::operator[](int i) const {return vec[i];}
 
-bool Point::operator==(const Point &p) const {return vec==p.getVec();}
+bool Point::operator==(const Point &p) const {return vec==p.getVec() && id==p.getId();}
 
 void Point::set(std::string k, std::vector<double> v) {id=k; vec=v;}
 

@@ -14,15 +14,20 @@ int main(int argc, char *argv[]) {
   std::vector<Point> pv = load_data(argv[1]);
 
   std::cout << "Training Points\n";
-  for (auto e: pv) {
+  CoverTree covertree;
+  for (Point e: pv) {
+    covertree.insertPoint(e);
     e.print();
   }
 
-  CoverTree covertree;
-  for  (auto e: pv) {
-    covertree.insertPoint(e);
-  }
+  covertree.print();
 
+  std::vector<Point> pt = load_data(argv[2]);
+  for (Point e: pt) {
+    Point nearest = covertree.nearestNeighbour(e);
+    e.print();
+    std::cout << "Nearest neighbour for " << e.getId() << " is point " << nearest.getId() << "\n";
+  }
 
   return 0;
 }

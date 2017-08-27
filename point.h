@@ -12,6 +12,7 @@ private:
   std::string id;
 public:
   std::vector<double> getVec() const;
+  std::string getId() const;
   double distance(const Point &p1) const;
   double operator[](int i) const;
   bool operator==(const Point &p1) const;

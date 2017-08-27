@@ -20,5 +20,6 @@ std::vector<Point> load_data(char* filename) {
     p.set(id, split<double>(line.substr(pos+1)));
     pv.push_back(p);
   }
+  is.close();
   return pv;
 }

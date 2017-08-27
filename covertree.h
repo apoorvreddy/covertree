@@ -3,6 +3,8 @@
 
 #include <cmath>
 #include <vector>
+#include <queue>
+#include <iostream>
 #include "point.h"
 #include "node.h"
 
@@ -12,17 +14,17 @@ private:
   int maxLevel;
   int minLevel;
   Node* root;
-  std::vector<Point> pointSet;
 
   bool insertNode(Node* node, std::vector<Node*> coverset_qi, int level);
 
 public:
 
   CoverTree();
-  // ~CoverTree();
+  ~CoverTree();
 
   void batchInsert(std::vector<Point> &points);
   void insertPoint(Point& point);
+  void print();
   Point& nearestNeighbour(Point& point);
   std::vector<Point>& kNN(Point& point);
   Point& epsilonNearestNeighbour(Point& point);
