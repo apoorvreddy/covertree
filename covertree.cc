@@ -26,8 +26,7 @@ bool CoverTree::insertNode(Node* node, std::vector<Node*> coverset_qi, int level
 
   std::vector<Node*> coverset_q;
   for (Node* n: coverset_qi) {
-    std::vector<Node*> nChildren = n->getChildren();
-    if (nChildren.empty()){
+    if (!n->hasChildren()){
       Node *selfchild = new Node(n->getPoint(), n->getLevel() - 1);
       n->addChild(selfchild);
       if (selfchild->getLevel() < minLevel)
@@ -70,16 +69,26 @@ bool CoverTree::insertNode(Node* node, std::vector<Node*> coverset_qi, int level
   }
 }
 
-Point& CoverTree::nearestNeighbour(Point& point) {
+std::pair<double, Point> CoverTree::nearestNeighbour(Point& point) {
 
   int i = maxLevel;
-  NodeSet qi, q, qi_1;
+  NodeSet qi, qi_1;
   qi.insert(root);
   while(i>minLevel) {
-    for(Node* node: qi)
-      for(Node* nodeChild: node->getChildren())
-        q.insert(nodeChild);
-      // q.insert(node->getChildren().begin(), node->getChildren().end()); Why doesn't this work !!
+    NodeSet q;
+    qi_1.clear();
+    for(Node* node: qi) {
+      if (node->hasChildren()) {
+        for(Node* nodeChild: node->getChildren())
+          q.insert(nodeChild);
+      } else {
+          Node *selfchild = new Node(node->getPoint(), node->getLevel() - 1);
+          node->addChild(selfchild);
+          if (selfchild->getLevel() < minLevel)
+            minLevel = selfchild->getLevel();
+          q.insert(selfchild);
+      }
+    }
 
     std::pair<double, Node*> distNodePair = getMinDistNodeSet(point, q);
     double threshold = distNodePair.first + pow(base, i);
@@ -93,7 +102,59 @@ Point& CoverTree::nearestNeighbour(Point& point) {
   }
   std::pair<double, Node*> distNodePair = getMinDistNodeSet(point, qi_1);
   Point p = distNodePair.second->getPoint();
-  return p;
+  return std::make_pair(distNodePair.first, p);
+}
+
+std::vector<std::pair<double, Point>> CoverTree::kNN(Point& point, int k) {
+
+  int i = maxLevel;
+  NodeSet qi, qi_1;
+  NodeDistPriorityQ distNodePQ;
+  double threshold;
+  qi.insert(root);
+
+  while(i>minLevel) {
+    NodeSet q;
+    qi_1.clear();
+    for(Node* node: qi) {
+      if (node->hasChildren())
+        for (Node* nodeChild:node->getChildren())
+          q.insert(nodeChild);
+      else {
+        // create and insert selfchild
+        Node *selfchild = new Node(node->getPoint(), node->getLevel() - 1);
+        node->addChild(selfchild);
+        if (selfchild->getLevel() < minLevel)
+          minLevel = selfchild->getLevel();
+        q.insert(selfchild);
+      }
+    }
+
+    distNodePQ = getDistNodeSet(point, q);
+    int j=0;
+    while(j<k && !distNodePQ.empty()) {
+      qi_1.insert(distNodePQ.top().second);
+      if (j == k-1 || distNodePQ.size() == 1)
+        threshold = distNodePQ.top().first + pow(base, i);
+      distNodePQ.pop();
+      j++;
+    }
+    while(!distNodePQ.empty() && distNodePQ.top().first <= threshold) {
+      qi_1.insert(distNodePQ.top().second);
+      distNodePQ.pop();
+    }
+
+    qi = qi_1;
+    i--;
+  }
+
+  distNodePQ = getDistNodeSet(point, qi_1);
+  std::vector<std::pair<double, Point>> knn;
+  for(int j=0; j<k; j++) {
+    knn.push_back(std::make_pair(distNodePQ.top().first, distNodePQ.top().second->getPoint()));
+    distNodePQ.pop();
+  }
+  return knn;
 }
 
 

@@ -5,6 +5,7 @@
 #include <vector>
 #include <queue>
 #include <iostream>
+#include <utility>
 #include "point.h"
 #include "node.h"
 
@@ -25,8 +26,8 @@ public:
   void batchInsert(std::vector<Point> &points);
   void insertPoint(Point& point);
   void print();
-  Point& nearestNeighbour(Point& point);
-  std::vector<Point>& kNN(Point& point);
+  std::pair<double, Point> nearestNeighbour(Point& point);
+  std::vector<std::pair<double, Point>> kNN(Point& point, int k);
   Point& epsilonNearestNeighbour(Point& point);
 
 };

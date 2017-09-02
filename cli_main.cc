@@ -24,9 +24,19 @@ int main(int argc, char *argv[]) {
 
   std::vector<Point> pt = load_data(argv[2]);
   for (Point e: pt) {
-    Point nearest = covertree.nearestNeighbour(e);
+    std::pair<double, Point> nearest = covertree.nearestNeighbour(e);
     e.print();
-    std::cout << "Nearest neighbour for " << e.getId() << " is point " << nearest.getId() << "\n";
+    std::cout << "Nearest neighbour for " << e.getId() << " is point " << nearest.second.getId() << " with distance " << nearest.first << "\n";
+  }
+
+  for (Point e: pt) {
+    std::vector<std::pair<double, Point>> knn = covertree.kNN(e, 2);
+    e.print();
+    std::cout << "kNN ";
+    for (std::pair<double, Point> p: knn) {
+      std::cout << "(" << p.second.getId() << ", " << p.first << "); ";
+    }
+    std::cout << "\n";
   }
 
   return 0;
